@@ -1,5 +1,5 @@
 {
     "version": "1.0",
-    "check_url": "https://raw.githubusercontent.com/Sonoran-Software/sonoran_apicheck/master/locations/version_locations.json",
+    "check_url": "https://raw.githubusercontent.com/Sonoran-Software/sonoran_locaations/master/locations/version_locations.json",
     "download_url": "https://raw.githubusercontent.com/Sonoran-Software/sonoran_locations/"
 }
