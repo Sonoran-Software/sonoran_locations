@@ -16,4 +16,4 @@ local config = {
     prefixPostal = true -- prefix postal code on locations sent, requires postal plugin
 }
 
-Config.RegisterPluginConfig(config.pluginName, config)
+--Config.RegisterPluginConfig(config.pluginName, config)
