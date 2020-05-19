@@ -6,8 +6,8 @@
     Put all needed configuration in this file.
 ]]
 local config = {
+    enabled = false,
     pluginName = "locations", -- name your plugin here
-    pluginVersion = "1.0", -- version of your plugin
     pluginAuthor = "SonoranCAD", -- author
     requiresPlugins = {}, -- required plugins for this plugin to work, separated by commas
 
@@ -16,4 +16,6 @@ local config = {
     prefixPostal = true -- prefix postal code on locations sent, requires postal plugin
 }
 
---Config.RegisterPluginConfig(config.pluginName, config)
+if config.enabled then
+    Config.RegisterPluginConfig(config.pluginName, config)
+end
