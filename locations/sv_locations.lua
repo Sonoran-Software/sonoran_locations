@@ -20,7 +20,7 @@ if pluginConfig.enabled then
         if #cache > 0 then
             performApiRequest(cache, 'UNIT_LOCATION', function() end)
         end
-        SetTimeout(pluginConfig.checkTime, SendLocations)
+        SetTimeout(Config.postTime, SendLocations)
     end
 
     function findPlayerLocation(playerSrc)
