@@ -56,4 +56,13 @@ if pluginConfig.enabled then
         LocationCache[source] = nil
     end)
 
+    RegisterNetEvent("SonoranCAD::locations:ErrorDetection")
+    AddEventHandler("SonoranCAD::locations:ErrorDetection", function(isInitial)
+        if isInitial then
+            errorLog(("Player %s reported an error sending initial location data. Check client logs for errors."):format(source))
+        else
+            warnLog(("Player %s reported an error sending location data. Check client logs for errors."):format(source))
+        end
+    end)
+
 end
