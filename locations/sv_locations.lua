@@ -13,14 +13,16 @@ if pluginConfig.enabled then
 
     -- Main api POST function
     local function SendLocations()
-        local cache = {}
-        for k, v in pairs(LocationCache) do
-            table.insert(cache, v)
+        while true do
+            local cache = {}
+            for k, v in pairs(LocationCache) do
+                table.insert(cache, v)
+            end
+            if #cache > 0 then
+                performApiRequest(cache, 'UNIT_LOCATION', function() end)
+            end
+            Wait(Config.postTime+500)
         end
-        if #cache > 0 then
-            performApiRequest(cache, 'UNIT_LOCATION', function() end)
-        end
-        SetTimeout(Config.postTime, SendLocations)
     end
 
     function findPlayerLocation(playerSrc)
