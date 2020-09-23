@@ -10,6 +10,7 @@ local pluginConfig = Config.GetPluginConfig("locations")
 if pluginConfig.enabled then
     -- Pending location updates array
     LocationCache = {}
+    local LastSend = 0
 
     -- Main api POST function
     local function SendLocations()
@@ -19,7 +20,12 @@ if pluginConfig.enabled then
                 table.insert(cache, v)
             end
             if #cache > 0 then
-                performApiRequest(cache, 'UNIT_LOCATION', function() end)
+                if GetGameTimer() > LastSend+5000 then
+                    performApiRequest(cache, 'UNIT_LOCATION', function() end)
+                    LastSend = GetGameTimer()
+                else
+                    debugLog(("UNIT_LOCATION: Attempted to send data too soon. %s !> %s"):format(GetGameTimer(), LastSend+5000))
+                end
             end
             Wait(Config.postTime+500)
         end
