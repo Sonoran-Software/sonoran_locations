@@ -53,9 +53,6 @@ if pluginConfig.enabled then
             debugLog(("user %s has no identifier for %s, skipped."):format(source, Config.primaryIdentifier))
             return
         end
-        if Config.serverType == "esx" then
-            identifier = ("%s:%s"):format(Config.primaryIdentifier, identifier)
-        end
         LocationCache[source] = {['apiId'] = identifier, ['location'] = currentLocation}
     end)
 
@@ -67,7 +64,7 @@ if pluginConfig.enabled then
     RegisterNetEvent("SonoranCAD::locations:ErrorDetection")
     AddEventHandler("SonoranCAD::locations:ErrorDetection", function(isInitial)
         if isInitial then
-            errorLog(("Player %s reported an error sending initial location data. Check client logs for errors."):format(source))
+            errorLog(("Player %s reported an error sending initial location data. Check client logs for errors. Did you set up the postals plugin correctly?"):format(source))
         else
             warnLog(("Player %s reported an error sending location data. Check client logs for errors."):format(source))
         end

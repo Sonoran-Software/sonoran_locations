@@ -36,6 +36,8 @@ if pluginConfig.enabled then
         end
         if pluginConfig.prefixPostal and postal ~= nil then
             currentLocation = "["..tostring(postal).."] "..currentLocation
+        elseif postal == nil and pluginConfig.prefixPostal == true then
+            debugLog("Unable to send postal because I got a null response from getNearestPostal()?!")
         end
         TriggerServerEvent('SonoranCAD::locations:SendLocation', currentLocation) 
         lastSentTime = GetGameTimer()
