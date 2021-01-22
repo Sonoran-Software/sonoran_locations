@@ -17,7 +17,10 @@ if pluginConfig.enabled then
         while true do
             local cache = {}
             for k, v in pairs(LocationCache) do
-                table.insert(cache, v)
+                if v.isUpdated ~= nil then
+                    v.isUpdated = nil
+                    table.insert(cache, v)
+                end
             end
             if #cache > 0 then
                 if GetGameTimer() > LastSend+5000 then
@@ -53,7 +56,7 @@ if pluginConfig.enabled then
             debugLog(("user %s has no identifier for %s, skipped."):format(source, Config.primaryIdentifier))
             return
         end
-        LocationCache[source] = {['apiId'] = identifier, ['location'] = currentLocation}
+        LocationCache[source] = {['apiId'] = identifier, ['location'] = currentLocation, ['isUpdated'] = true}
     end)
 
     AddEventHandler("playerDropped", function()

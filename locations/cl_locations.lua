@@ -8,7 +8,8 @@
 local pluginConfig = Config.GetPluginConfig("locations")
 
 if pluginConfig.enabled then
-    local currentLocation = nil
+    local currentLocation = ''
+    local lastLocation = ''
     local lastSentTime = nil
 
     local function sendLocation()
@@ -20,27 +21,28 @@ if pluginConfig.enabled then
         else
             pluginConfig.prefixPostal = false
         end
-        -- Determine location format
-        if (GetStreetNameFromHashKey(var2) == '') then
-            currentLocation = GetStreetNameFromHashKey(var1)
-            if (currentLocation ~= lastLocation) then
-                -- Updated location - Save and send to server API call queue
-                lastLocation = currentLocation
-            end
-        else 
-            currentLocation = GetStreetNameFromHashKey(var1) .. ' / ' .. GetStreetNameFromHashKey(var2)
-            if (currentLocation ~= lastLocation) then
-                -- Updated location - Save and send to server API call queue
-                lastLocation = currentLocation
-            end
+        local l1 = GetStreetNameFromHashKey(var1)
+        local l2 = GetStreetNameFromHashKey(var2)
+        if l2 ~= '' then
+            currentLocation = l1 .. ' / ' .. l2
+        else
+            currentLocation = l1
         end
-        if pluginConfig.prefixPostal and postal ~= nil then
-            currentLocation = "["..tostring(postal).."] "..currentLocation
-        elseif postal == nil and pluginConfig.prefixPostal == true then
-            debugLog("Unable to send postal because I got a null response from getNearestPostal()?!")
+        if currentLocation ~= lastLocation then
+            -- Location changed, continue
+            local toSend = currentLocation
+            if pluginConfig.prefixPostal and postal ~= nil then
+                toSend = "["..tostring(postal).."] "..currentLocation
+            elseif postal == nil and pluginConfig.prefixPostal == true then
+                debugLog("Unable to send postal because I got a null response from getNearestPostal()?!")
+            end
+            TriggerServerEvent('SonoranCAD::locations:SendLocation', toSend) 
+            debugLog(("Locations different, sending. (%s = %s) SENT: %s"):format(currentLocation, lastLocation, toSend))
+            lastSentTime = GetGameTimer()
+            lastLocation = currentLocation
+        else
+            debugLog(("Locations match, not sending. (%s = %s)"):format(currentLocation, lastLocation))
         end
-        TriggerServerEvent('SonoranCAD::locations:SendLocation', currentLocation) 
-        lastSentTime = GetGameTimer()
     end
 
     Citizen.CreateThread(function()
@@ -55,7 +57,7 @@ if pluginConfig.enabled then
     end)
 
     Citizen.CreateThread(function()
-        while true do
+        while lastSentTime == nil do
             while not NetworkIsPlayerActive(PlayerId()) do
                 Wait(10)
             end
@@ -63,11 +65,6 @@ if pluginConfig.enabled then
             if lastSentTime == nil then
                 TriggerServerEvent("SonoranCAD::locations:ErrorDetection", true)
                 warnLog("Warning: No location data has been sent yet. Check for errors.")
-            else
-                if (GetGameTimer() - lastSentTime) > 10000 then
-                    TriggerServerEvent("SonoranCAD::locations:ErrorDetection", false)
-                    warnLog("Warning: Locations have not been sent recently.")
-                end
             end
             Wait(30000)
         end
