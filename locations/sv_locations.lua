@@ -5,7 +5,7 @@
     Creator: SonoranCAD
     Description: Implements location updating for players
 ]]
-local pluginConfig = Config.GetPluginConfig("locations")
+CreateThread(function() Config.LoadPlugin("locations", function(pluginConfig)
 
 if pluginConfig.enabled then
     -- Pending location updates array
@@ -74,3 +74,4 @@ if pluginConfig.enabled then
     end)
 
 end
+end) end)
