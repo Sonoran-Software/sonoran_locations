@@ -30,7 +30,7 @@ if pluginConfig.enabled then
         else
             currentLocation = l1
         end
-        if currentLocation ~= lastLocation or #(pos.x, pos.y, pos.z) ~= #(lastCoords.x, lastCoords.y, lastCoords.z)  then
+        if (currentLocation ~= lastLocation or vector3(pos.x, pos.y, pos.z) ~= vector3(lastCoords.x, lastCoords.y, lastCoords.z))  then
             -- Location changed, continue
             local toSend = currentLocation
             if pluginConfig.prefixPostal and postal ~= nil then
