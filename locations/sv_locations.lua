@@ -56,7 +56,7 @@ if pluginConfig.enabled then
             debugLog(("user %s has no identifier for %s, skipped."):format(source, Config.primaryIdentifier))
             return
         end
-        LocationCache[source] = {['apiId'] = identifier, ['location'] = currentLocation, ['position'] = position, ['isUpdated'] = true}
+        LocationCache[source] = {['apiId'] = identifier, ['location'] = currentLocation, ['coordinates'] = position, ['isUpdated'] = true}
     end)
 
     AddEventHandler("playerDropped", function()

@@ -8,9 +8,11 @@
 CreateThread(function() Config.LoadPlugin("locations", function(pluginConfig)
 
 if pluginConfig.enabled then
+
     local currentLocation = ''
-    local lastLocation = ''
+    local lastLocation = 'none'
     local lastSentTime = nil
+    local lastCoords = { x = 0, y = 0, z = 0 }
 
     local function sendLocation()
         local pos = GetEntityCoords(PlayerPedId())
@@ -28,7 +30,7 @@ if pluginConfig.enabled then
         else
             currentLocation = l1
         end
-        if currentLocation ~= lastLocation then
+        if currentLocation ~= lastLocation or #(pos.x, pos.y, pos.z) ~= #(lastCoords.x, lastCoords.y, lastCoords.z)  then
             -- Location changed, continue
             local toSend = currentLocation
             if pluginConfig.prefixPostal and postal ~= nil then
@@ -37,15 +39,16 @@ if pluginConfig.enabled then
                 debugLog("Unable to send postal because I got a null response from getNearestPostal()?!")
             end
             TriggerServerEvent('SonoranCAD::locations:SendLocation', toSend, pos) 
-            debugLog(("Locations different, sending. (%s = %s) SENT: %s"):format(currentLocation, lastLocation, toSend))
+            lastCoords = pos
+            debugLog(("Locations different, sending. (%s ~= %s) SENT: %s (POS: %s)"):format(currentLocation, lastLocation, toSend, json.encode(lastCoords)))
             lastSentTime = GetGameTimer()
             lastLocation = currentLocation
-        else
-            debugLog(("Locations match, not sending. (%s = %s)"):format(currentLocation, lastLocation))
         end
     end
 
     Citizen.CreateThread(function()
+        -- Wait for plugins to settle
+        Wait(5000)
         while true do
             while not NetworkIsPlayerActive(PlayerId()) do
                 Wait(10)
@@ -61,7 +64,7 @@ if pluginConfig.enabled then
             while not NetworkIsPlayerActive(PlayerId()) do
                 Wait(10)
             end
-            Wait(10000)
+            Wait(15000)
             if lastSentTime == nil then
                 TriggerServerEvent("SonoranCAD::locations:ErrorDetection", true)
                 warnLog("Warning: No location data has been sent yet. Check for errors.")
