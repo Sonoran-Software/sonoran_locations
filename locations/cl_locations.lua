@@ -38,7 +38,11 @@ if pluginConfig.enabled then
             elseif postal == nil and pluginConfig.prefixPostal == true then
                 debugLog("Unable to send postal because I got a null response from getNearestPostal()?!")
             end
-            TriggerServerEvent('SonoranCAD::locations:SendLocation', toSend, pos) 
+            if bodyCamOn then
+                TriggerServerEvent('SonoranCAD::locations:SendLocation', toSend, pos, bodyCamFrequency)
+            else
+                TriggerServerEvent('SonoranCAD::locations:SendLocation', toSend, pos)
+            end
             lastCoords = pos
             debugLog(("Locations different, sending. (%s ~= %s) SENT: %s (POS: %s)"):format(currentLocation, lastLocation, toSend, json.encode(lastCoords)))
             lastSentTime = GetGameTimer()

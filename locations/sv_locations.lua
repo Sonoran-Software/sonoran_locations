@@ -49,14 +49,19 @@ if pluginConfig.enabled then
 
     -- Event from client when location changes occur
     RegisterServerEvent('SonoranCAD::locations:SendLocation')
-    AddEventHandler('SonoranCAD::locations:SendLocation', function(currentLocation, position)
+    AddEventHandler('SonoranCAD::locations:SendLocation', function(currentLocation, position, bodycamFrequency)
         local source = source
         local identifier = GetIdentifiers(source)[Config.primaryIdentifier]
         if identifier == nil then
             debugLog(("user %s has no identifier for %s, skipped."):format(source, Config.primaryIdentifier))
             return
         end
-        LocationCache[source] = {['apiId'] = identifier, ['location'] = currentLocation, ['coordinates'] = position, ['isUpdated'] = true}
+        if bodycamFrequency  then
+            local frameNumber = latestFrame[source]
+            LocationCache[source] = {['apiId'] = identifier, ['location'] = currentLocation, ['coordinates'] = position, ['isUpdated'] = true, ['bodyFrequency'] = bodycamFrequency, ['proxyUrl'] = Config.proxyUrl, ['bodyFrame'] = frameNumber}
+        else
+            LocationCache[source] = {['apiId'] = identifier, ['location'] = currentLocation, ['coordinates'] = position, ['isUpdated'] = true}
+        end
     end)
 
     AddEventHandler("playerDropped", function()
